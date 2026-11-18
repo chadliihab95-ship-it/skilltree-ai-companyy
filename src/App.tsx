@@ -21,7 +21,7 @@ export default function App(){
  const completed=tasks.filter(t=>t.status==='مكتملة').length;
  const pending=tasks.filter(t=>t.status==='بانتظار الموافقة').length;
  const filtered=useMemo(()=>tasks.filter(t=>(t.title+t.assignee+t.status).toLowerCase().includes(query.toLowerCase())),[tasks,query]);
- const nav=[['overview','لوحة القيادة',LayoutDashboard],['agents','الوكلاء',Bot],['tasks','المهام',BriefcaseBusiness],['approvals','الموافقات',ShieldCheck],['activity','سجل النشاط',Activity]];
+ const nav: [string,string,any][]=[['overview','لوحة القيادة',LayoutDashboard],['agents','الوكلاء',Bot],['tasks','المهام',BriefcaseBusiness],['approvals','الموافقات',ShieldCheck],['activity','سجل النشاط',Activity]];
  function addTask(){if(!title.trim())return;const a=agents.find(x=>x.department===dept)!;setTasks(p=>[{id:`ST-${String(p.length+1).padStart(3,'0')}`,title,department:dept,assignee:a.name,priority,status:'جديدة',createdAt:'الآن'},...p]);setTitle('');setShowTask(false);setNotice('تم إنشاء المهمة محلياً.');}
  function updateTask(id:string,status:Task['status']){setTasks(p=>p.map(t=>t.id===id?{...t,status}:t));}
  async function sendCEO(){if(!message.trim()||busy)return;const prompt=message;const next=[...chat,{role:'user' as const,content:prompt}];setChat(next);setMessage('');setBusy(true);try{const r=await fetch('/api/ceo/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:prompt,history:chat})});const data=await r.json();setChat(p=>[...p,{role:'assistant',content:data.reply||data.error||'حدث خطأ.'}]);}catch{setChat(p=>[...p,{role:'assistant',content:'تعذر الوصول إلى الخادم. شغّل npm run dev وتأكد من إعداد API.'}]);}finally{setBusy(false);}}

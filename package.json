@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.10",
+    "@capacitor/core": "^7.6.10",
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.49.1",
     "cors": "^2.8.5",
@@ -20,15 +22,21 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.6.10",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.4",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^6.3.0",
     "concurrently": "^9.1.2",
+    "rollup": "^4.68.7",
     "tsx": "^4.19.3",
     "typescript": "~5.7.2",
-    "vite": "^6.1.0",
-    "@vitejs/plugin-react": "^4.3.4"
+    "vite": "^8.3.8"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
   }
 }
