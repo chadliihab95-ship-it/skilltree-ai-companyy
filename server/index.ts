@@ -158,6 +158,21 @@ app.post('/api/ceo/chat', async (req, res) => {
     const { data: deptRows, error: deptError } = await db.from('departments').select('id,name,slug').eq('organization_id', organizationId);
     if (deptError) throw deptError;
     const departments = deptRows || [];
+    const { data: taskRows, error: taskReadError } = await db
+      .from('tasks')
+      .select('id,title,description,priority,status,department_id,agent_id')
+      .eq('organization_id', organizationId)
+      .limit(20);
+    if (taskReadError) throw taskReadError;
+    const existingTasksContext = (taskRows || []).map((t:any) => ({
+      id: t.id,
+      title: t.title,
+      description: String(t.description || '').slice(0,500),
+      priority: t.priority,
+      status: t.status,
+      department: departments.find((d:any) => d.id === t.department_id)?.name || 'غير معروف',
+      agent_id: t.agent_id
+    }));
     const executeIntent = /(?:ابدأ|باشر|نفذ|نفّذ|أنشئ.{0,20}مهام|حوّل.{0,30}مهام|وزع.{0,20}مهام|كلف.{0,20}الأقسام|اعمل.{0,20}مهام)/i.test(message);
 
     const rawHistory = Array.isArray(req.body?.history) ? req.body.history.slice(-10) : [];
@@ -181,7 +196,7 @@ app.post('/api/ceo/chat', async (req, res) => {
 إذا كان المستخدم يطلب نصيحة أو خطة فقط، لا تقترح إنشاء مهام داخل tasks واجعلها []. إذا طلب التنفيذ أو إنشاء/توزيع المهام، أنشئ حتى 5 مهام عملية، ولا تنشئ مهام وهمية أو غير مرتبطة بهدفه.
 لا تدّع أن مهام أُنشئت. لا تنفذ عمليات خارجية أو حساسة. لا تطلب مفاتيح أو كلمات مرور. اذكر المخاطر والميزانية المحدودة عند الحاجة.`,
       history,
-      prompt: message,
+      prompt: message + '\n\nبيانات المهام الحقيقية الحالية من قاعدة البيانات (للاطلاع والتحقق فقط، لا تعتبرها منجزة دون دليل):\n' + JSON.stringify(existingTasksContext),
       json: true
     });
 
