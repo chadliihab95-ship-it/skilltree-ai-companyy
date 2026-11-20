@@ -160,9 +160,10 @@ app.post('/api/ceo/chat', async (req, res) => {
     const departments = deptRows || [];
     const { data: taskRows, error: taskReadError } = await db
       .from('tasks')
-      .select('id,title,description,priority,status,department_id,agent_id')
+      .select('id,title,description,priority,status,department_id,agent_id,created_at')
       .eq('organization_id', organizationId)
-      .limit(20);
+      .order('created_at', { ascending: false })
+      .limit(5);
     console.error('[CEO tasks diagnostic]', {
       organizationId,
       count: taskRows?.length ?? 0,
@@ -177,7 +178,8 @@ app.post('/api/ceo/chat', async (req, res) => {
       priority: t.priority,
       status: t.status,
       department: departments.find((d:any) => d.id === t.department_id)?.name || 'غير معروف',
-      agent_id: t.agent_id
+      agent_id: t.agent_id,
+      created_at: t.created_at
     }));
     const executeIntent = /(?:ابدأ|باشر|نفذ|نفّذ|أنشئ.{0,20}مهام|حوّل.{0,30}مهام|وزع.{0,20}مهام|كلف.{0,20}الأقسام|اعمل.{0,20}مهام)/i.test(message);
 
