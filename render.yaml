@@ -23,3 +23,11 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
+
+  - type: static
+    name: skilltree-web
+    buildCommand: npm install --include=dev && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://skilltree-api-jook.onrender.com
