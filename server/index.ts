@@ -163,6 +163,12 @@ app.post('/api/ceo/chat', async (req, res) => {
       .select('id,title,description,priority,status,department_id,agent_id')
       .eq('organization_id', organizationId)
       .limit(20);
+    console.error('[CEO tasks diagnostic]', {
+      organizationId,
+      count: taskRows?.length ?? 0,
+      errorCode: taskReadError?.code,
+      error: taskReadError?.message
+    });
     if (taskReadError) throw taskReadError;
     const existingTasksContext = (taskRows || []).map((t:any) => ({
       id: t.id,
