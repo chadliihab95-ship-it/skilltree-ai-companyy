@@ -252,8 +252,8 @@ app.post('/api/ceo/chat', async (req, res) => {
       }
     }
     let reply = String(parsed.reply || 'تم إعداد الرد.').slice(0,12000);
-    if (createdTasks.length) reply += '\\n\\n✅ تم إنشاء ' + createdTasks.length + ' مهام حقيقية في قاعدة البيانات.';
-    else if (executeIntent) reply += '\\n\\nلم يتم إنشاء مهام؛ لم أجد مهام صالحة مرتبطة بالأقسام الحالية.';
+    if (createdTasks.length) reply += '\n\n✅ تم إنشاء ' + createdTasks.length + ' مهام حقيقية في قاعدة البيانات.';
+    else if (executeIntent) reply += '\n\nلم يتم إنشاء مهام؛ لم أجد مهام صالحة مرتبطة بالأقسام الحالية.';
     return res.json({ reply, createdTasks, userId: userData.user.id });
   } catch (error) {
     console.error('CEO chat error:', error);
