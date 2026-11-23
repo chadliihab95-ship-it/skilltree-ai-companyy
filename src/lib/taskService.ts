@@ -2,7 +2,17 @@ import { supabase } from './supabase';
 import type { Task } from '../data';
 import { agents as localAgents, departments as localDepartments } from '../data';
 
-function mapStatus(status: string): Task['status'] {
+export type DbDepartment = { id: string; slug: string; name: string };
+export type DbAgent = {
+  id: string;
+  name: string;
+  department_id: string | null;
+  role: string;
+  status: string;
+  instructions: string | null;
+};
+
+export function mapStatus(status: string): Task['status'] {
   switch (status) {
     case 'running':
     case 'queued':
@@ -16,13 +26,13 @@ function mapStatus(status: string): Task['status'] {
   }
 }
 
-function mapPriority(priority: string): Task['priority'] {
+export function mapPriority(priority: string): Task['priority'] {
   if (priority === 'urgent' || priority === 'high') return 'عالية';
   if (priority === 'low') return 'منخفضة';
   return 'متوسطة';
 }
 
-function toDbStatus(status: Task['status']) {
+export function toDbStatus(status: Task['status']) {
   switch (status) {
     case 'قيد التنفيذ': return 'running';
     case 'بانتظار الموافقة': return 'awaiting_approval';
@@ -31,7 +41,7 @@ function toDbStatus(status: Task['status']) {
   }
 }
 
-function toDbPriority(priority: Task['priority']) {
+export function toDbPriority(priority: Task['priority']) {
   switch (priority) {
     case 'عالية': return 'high';
     case 'منخفضة': return 'low';
@@ -51,7 +61,7 @@ export async function loadOrganizationTasks(organizationId: string) {
       .eq('organization_id', organizationId),
 
     supabase.from('agents')
-      .select('id,name,department_id')
+      .select('id,name,department_id,role,status,instructions')
       .eq('organization_id', organizationId)
   ]);
 
@@ -82,7 +92,7 @@ export async function loadOrganizationTasks(organizationId: string) {
     };
   });
 
-  return { tasks, departmentIds };
+  return { tasks, departmentIds, departments: dbDepartments as DbDepartment[], agents: dbAgents as DbAgent[] };
 }
 
 export async function createOrganizationTask(
@@ -108,7 +118,8 @@ export async function createOrganizationTask(
   if (agentsError) throw agentsError;
 
   const preferredAgent = localAgents.find(a => a.department === departmentSlug);
-  const matchingAgent = matchingAgents?.find(a => a.name === preferredAgent?.name);
+  const matchingAgent =
+    matchingAgents?.find(a => a.name === preferredAgent?.name) || matchingAgents?.[0];
 
   const { data, error } = await supabase
     .from('tasks')

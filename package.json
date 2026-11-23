@@ -7,7 +7,8 @@
     "dev": "concurrently \"tsx server/index.ts\" \"vite\"",
     "build": "tsc -b && vite build",
     "start": "tsx server/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.10",

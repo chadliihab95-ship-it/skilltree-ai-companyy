@@ -10,3 +10,13 @@ dist
 !.env.example
 node_modules/
 dist/
+
+# Local backups and runtime/build artifacts (kept on disk, never committed)
+*.backup
+*.backup-*
+tsconfig.tsbuildinfo
+skilltree-dev.log
+skilltree-dev.pid
+
+# Local APK outputs
+apk-download/
