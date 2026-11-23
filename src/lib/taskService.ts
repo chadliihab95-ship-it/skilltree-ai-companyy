@@ -12,7 +12,7 @@ export type DbAgent = {
   instructions: string | null;
 };
 
-function mapStatus(status: string): Task['status'] {
+export function mapStatus(status: string): Task['status'] {
   switch (status) {
     case 'running':
     case 'queued':
@@ -26,13 +26,13 @@ function mapStatus(status: string): Task['status'] {
   }
 }
 
-function mapPriority(priority: string): Task['priority'] {
+export function mapPriority(priority: string): Task['priority'] {
   if (priority === 'urgent' || priority === 'high') return 'عالية';
   if (priority === 'low') return 'منخفضة';
   return 'متوسطة';
 }
 
-function toDbStatus(status: Task['status']) {
+export function toDbStatus(status: Task['status']) {
   switch (status) {
     case 'قيد التنفيذ': return 'running';
     case 'بانتظار الموافقة': return 'awaiting_approval';
@@ -41,7 +41,7 @@ function toDbStatus(status: Task['status']) {
   }
 }
 
-function toDbPriority(priority: Task['priority']) {
+export function toDbPriority(priority: Task['priority']) {
   switch (priority) {
     case 'عالية': return 'high';
     case 'منخفضة': return 'low';
