@@ -2,6 +2,16 @@ import { supabase } from './supabase';
 import type { Task } from '../data';
 import { agents as localAgents, departments as localDepartments } from '../data';
 
+export type DbDepartment = { id: string; slug: string; name: string };
+export type DbAgent = {
+  id: string;
+  name: string;
+  department_id: string | null;
+  role: string;
+  status: string;
+  instructions: string | null;
+};
+
 function mapStatus(status: string): Task['status'] {
   switch (status) {
     case 'running':
@@ -51,7 +61,7 @@ export async function loadOrganizationTasks(organizationId: string) {
       .eq('organization_id', organizationId),
 
     supabase.from('agents')
-      .select('id,name,department_id')
+      .select('id,name,department_id,role,status,instructions')
       .eq('organization_id', organizationId)
   ]);
 
@@ -82,7 +92,7 @@ export async function loadOrganizationTasks(organizationId: string) {
     };
   });
 
-  return { tasks, departmentIds };
+  return { tasks, departmentIds, departments: dbDepartments as DbDepartment[], agents: dbAgents as DbAgent[] };
 }
 
 export async function createOrganizationTask(
@@ -108,7 +118,8 @@ export async function createOrganizationTask(
   if (agentsError) throw agentsError;
 
   const preferredAgent = localAgents.find(a => a.department === departmentSlug);
-  const matchingAgent = matchingAgents?.find(a => a.name === preferredAgent?.name);
+  const matchingAgent =
+    matchingAgents?.find(a => a.name === preferredAgent?.name) || matchingAgents?.[0];
 
   const { data, error } = await supabase
     .from('tasks')
